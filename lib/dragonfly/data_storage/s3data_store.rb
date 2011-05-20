@@ -40,10 +40,11 @@ module Dragonfly
         rescuing_socket_errors do
           if use_filesystem
             temp_object.file do |f|
-              storage.put_object(bucket_name, uid, f, full_storage_headers(headers, meta))
+              # Stef - potential fix for uploading to s3 in the background, thus not blocking the responders
+              storage.delay.put_object(bucket_name, uid, f, full_storage_headers(headers, meta))
             end
           else
-            storage.put_object(bucket_name, uid, temp_object.data, full_storage_headers(headers, meta))
+            storage.delay.put_object(bucket_name, uid, temp_object.data, full_storage_headers(headers, meta))
           end
         end
         
